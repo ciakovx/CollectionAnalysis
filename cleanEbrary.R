@@ -25,13 +25,14 @@ ebrary_holdings$Perpetual[is.na(ebrary_holdings$Perpetual)] <- 1  # replace the 
 ebrary_holdings$Perpetual[which(ebrary_holdings$ebrary.DocID == 10742399)] <- 1  # this should be a 1
 
 #table(ebrary_usage$ebrary.Doc.ID %in% ebrary_holdings$ebrary.DocID) # there are 2,764 ebrary usage titles not found in the ebrary holdings report
-#ebrary_noHoldings <- ebrary_usage[ebrary_usage$ebrary.Doc.ID %in% ebrary_holdings$ebrary.DocID == FALSE, ]
+#ebrary_noHoldings <- ebrary_usage[ebrary_usage$ebrary.Doc.ID %in% ebrary_holdings$ebrary.DocID == FALSE, ]  # deleting these because they're no longer in our holdings
 #write.csv(ebrary_noHoldings, file="./data/processed/ebrary/ebrary_noHoldings.csv", row.names = FALSE)
 
+ebrary_usage <- ebrary_usage[-c(which(ebrary_usage$ebrary.Doc.ID %in% ebrary_holdings$ebrary.DocID == FALSE)), ]  # leaves 18848
 
 
-# REMOVE THESE!!
 
+# coding a new status variable
 z <- ebrary_holdings
 z$status <- vector(mode="character", length = nrow(z))
 
@@ -44,8 +45,8 @@ z$status[which(z$Subscription == 0 & z$Perpetual == 1 & z$DDA.Purchase == 0 & z$
 z$status[which(z$Subscription == 1 & z$Perpetual == 0 & z$DDA.Purchase == 0 & z$DDA.Pool == 0)] <- "Subscription"
 
 
-z$Perpetual[which(z$status == "")] <- 1  # this was a mistake, it should have been a zero
-z$DDA.Pool[which(z$status == "")] <- 0
+z$Perpetual[which(z$status == "")] <- 1  # this was a mistake on ebrary's side, it should have been a zero
+z$DDA.Pool[which(z$status == "")] <- 0  # same here, making these changes that came to light
 
 z$status[which(z$Subscription == 1 & z$DDA.Purchase == 1)] <- "Subscription.DDA"
 z$status[which(z$Subscription == 1 & z$Perpetual == 1)] <- "Subscription.Perpetual"
@@ -61,7 +62,7 @@ z$status[which(z$Subscription == 1 & z$Perpetual == 0 & z$DDA.Purchase == 0 & z$
 ebrary <- full_join(ebrary_usage
                     , z
                     , by = c("ebrary.Doc.ID" = "ebrary.DocID"))
-# 194263
+# 191499
 
 repl.func <- function(df, var){
   varx <- paste0(var, ".x")
