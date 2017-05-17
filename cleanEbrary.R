@@ -110,4 +110,12 @@ ebrary <- select(ebrary
                  , -ISBN.Electronic
                  , -ISBN.electronic)
 
+refcols <- c("ebrary.Doc.ID", "Title", "Author", "Publisher", "PrintISBN", "eISBN")
+ebrary <- ebrary[, c(refcols, setdiff(names(ebrary), refcols))]  # nice simple way of reordering columns
+
+
+
+#write.csv(ebrary
+#          , "./data/results/ebrary.csv"
+#          , row.names = F)
 
