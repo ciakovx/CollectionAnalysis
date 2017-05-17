@@ -107,6 +107,8 @@ rm(clstkRaw, isn13, isn13.1)
 
 table(nchar(cl$ISBN_clean))  # now there are 213,031
 
+cl <- filter(cl, is.na(VEN.TITLE.))  # this gets rid of the garbage data from faulty Sierra exports
+
 
 # This is the definitive dataset with clean ISBNs
 write.csv(cl
